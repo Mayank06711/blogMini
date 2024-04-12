@@ -64,8 +64,6 @@ Now, your Node.js project is set up on GitHub with a basic structure, ready for 
    - **a)** Use `mongoose.connect` to connect to the database. Make sure to handle it within a `try-catch` block:
   
    - **b)** In the `index.js` of `src`, import the `connectDB` function:
-     ```javascript
-     const connectDB = require('../db/index');
-     ```
+   
 
 Now, your Node.js project is connected to MongoDB and ready to use the database in your application, with environment variables managed using dotenv.
