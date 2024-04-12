@@ -67,3 +67,62 @@ Now, your Node.js project is set up on GitHub with a basic structure, ready for 
    
 
 Now, your Node.js project is connected to MongoDB and ready to use the database in your application, with environment variables managed using dotenv.
+
+### How to Set Up Express Middleware in Your Node.js Project
+
+1. **Install Express, Cors, and Cookie-Parser**:
+   - Install Express, Cors, and Cookie-Parser using npm:
+     ```bash
+     npm install express cors cookie-parser
+     ```
+
+2. **Import Express and Middleware**:
+   - Import Express and the required middleware at the top of your file:
+     ```javascript
+     import express from 'express';
+     import cors from 'cors';
+     import cookieParser from 'cookie-parser';
+     ```
+
+3. **Initialize Express App**:
+   - Create an instance of the Express application:
+     ```javascript
+     const app = express();
+     ```
+
+4. **Use Cors Middleware**:
+   - Use the Cors middleware to enable Cross-Origin Resource Sharing (CORS) with options for origin and credentials:
+     ```javascript
+     app.use(cors({
+         origin: process.env.CORS_ORIGIN,
+         credentials: true,
+     }));
+     ```
+
+5. **Use Body Parser Middleware**:
+   - Use the Express built-in JSON and URL-encoded body parser middleware to parse incoming requests with options for request size limit:
+     ```javascript
+     app.use(express.json({limit: "20kb"}));
+     app.use(express.urlencoded({extended: true, limit:"20kb"}));
+     ```
+
+6. **Serve Static Files**:
+   - Use the Express built-in static middleware to serve static files from the "public" directory:
+     ```javascript
+     app.use(express.static("public"));
+     ```
+
+7. **Use Cookie Parser Middleware**:
+   - Use the Cookie-Parser middleware to parse cookies from the request headers:
+     ```javascript
+     app.use(cookieParser());
+     ```
+
+8. **Export the Express App**:
+   - Export the Express app instance to be used in other files:
+     ```javascript
+     export { app };
+     ```
+
+Now, your Express middleware is set up in your Node.js project, allowing you to handle HTTP requests and responses efficiently.
+
