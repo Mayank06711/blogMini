@@ -25,6 +25,6 @@ const blogSchema = new Schema({
       },
 },{timestamps: true});
 
-blogSchema.plugin(mongooseAggregatePaginate);
+blogSchema.plugin(mongooseAggregatePaginate);//Adding the plugin to a schema
 
 export const Blog = mongoose.model("Blog", blogSchema);

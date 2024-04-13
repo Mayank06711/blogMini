@@ -1,4 +1,6 @@
 import mongoose , {Schema} from "mongoose";
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
 
 const userSchema = new Schema({
     username:{
@@ -44,5 +46,44 @@ const userSchema = new Schema({
 
 },{timestamps: true});
 
+
+
+userSchema.pre("save", async function (next){ // pre is middleware hook which executes evrytime just before saving document
+    if(!this.isModified("password"))return next(); ;
+    this.password = bcrypt.hash(this.password,10);
+    next();
+})
+
+userSchema.methods.isPasswordCorrect = async function (password) {  // methods is is used to add any property  in the schema
+    return await bcrypt.compare(password, this.password);
+}
+
+userSchema.methods.generateAccessToken = function (){
+   return jwt.sign(
+        { // this is payload i.e user info will be stored in jwt token
+            _id: this._id,
+            username: this.username,
+            email: this.email,
+            fullName: this.fullName,
+        },
+        process.env.ACCCES_TOKEN_SECRET_KEY,
+        {
+            expiresIn: process.env.ACCCES_TOKEN_EXPIRY
+        }
+    )
+}
+
+userSchema.methods.generateRefreshToken = function (){
+    return jwt.sign(
+         { // this is payload i.e user info will be stored in jwt token
+             _id: this._id,
+         },
+         process.env.REFRESH_TOKEN_SECRET_KEY,
+         {
+             expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+         }
+     )
+ }
+//what is jwt ? ANS IS> IT IS a beare token anyone with this token will be allowed to recive data on sending request
 
 export const User = mongoose.model("User", userSchema);
