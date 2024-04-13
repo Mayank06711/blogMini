@@ -16,6 +16,13 @@ const userSchema = new Schema({
         unique: true,
         lowercase: true,
         trim: true,
+        validate:{
+            validator: async function(value){
+               // Regular expression to match the email format
+               return /\S+@\S+\.\S+/.test(value);
+            },
+            message: props => `${props.value} is not a valid email address!`
+        }
     },
     password:{
         type: String,
@@ -29,13 +36,14 @@ const userSchema = new Schema({
         trim: true,
         index: true 
     },
-    profilePicture:{
+    avatar:{
         type: String,//to save url of profile picture
-        required: false,
+        required: true,
     },
     bio:{
         type: String,
         required: false,
+        default:"blog writer"
     },
     role:{
         type:String,
@@ -43,14 +51,16 @@ const userSchema = new Schema({
         trim: true,
         default: "user"//Defines the user's role or permissions within the blog system. For example, "user", "admin", "editor", etc.
     },
-
+    refreshToken:{
+        type: String,
+    }
 },{timestamps: true});
 
 
 
 userSchema.pre("save", async function (next){ // pre is middleware hook which executes evrytime just before saving document
     if(!this.isModified("password"))return next(); ;
-    this.password = bcrypt.hash(this.password,10);
+    this.password =await bcrypt.hash(this.password,10);
     next();
 })
 
