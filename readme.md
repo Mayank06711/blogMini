@@ -244,7 +244,7 @@ modelSchema.methods.generateRefreshToken = function () {
 In **summary**, hooks and methods in Mongoose provide essential functionalities such as data validation, encryption, and token generation, enhancing the capabilities of your schemas and models. They allow you to customize the behavior of your application's data layer according to your specific requirements
 
 
-##Multer vs. Cloudinary: A Comparison
+###Multer vs. Cloudinary: A Comparison
 
 ### Multer
 
