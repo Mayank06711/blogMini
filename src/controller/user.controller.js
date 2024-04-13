@@ -3,6 +3,8 @@ import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { User } from "../models/user.model.js";
 import { uploadOncloudinary, deleteFromCloudinary } from "../utils/cloudinaryFileUpload.js";
+
+
 const registerUser = asyncHandler(async (req, res) => {
   //steps1 get user information from client
   //steps2 validate user information
@@ -82,9 +84,20 @@ const registerUser = asyncHandler(async (req, res) => {
    .json(new ApiResponse(201, createUser, "User registerd successfully"))
 });//DONE!
 
+
+const loginUser = asyncHandler(async (req, res) => {
+    const {username, password,email } = req.body;
+
+    if ([username, password , email].some((value) => value?.trim()==="")) {
+        throw new ApiError(401, "Invalid login details: check your email/username and password")
+    }
+
+    const user = await User.findOne({username: username.toLowerCase()});
+})
+
 export {
      registerUser,
-    //  loginUser,
+     loginUser,
     //  logoutUser,
     //  refreshAccessTooken,
     //  changeCurrentPassword,
