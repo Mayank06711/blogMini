@@ -140,7 +140,107 @@ The Blog Mini Overview Model provides a concise summary of the content covered i
 To use the Blog Mini Overview Model, simply [click here](https://app.eraser.io/workspace/PmlS3lCWuWBjK3FlW5b9?origin=share) to access the content.
 
 
+### mongoose-aggregate-paginate-v2
 
+**Definition**: mongoose-aggregate-paginate-v2 is a plugin for Mongoose that enhances the `aggregate()` method with pagination support.
 
+#### Installation
+
+To install mongoose-aggregate-paginate-v2, use npm:
+
+**Adding the plugin to a schema:**
+
+const mongoose = require("mongoose");
+const aggregatePaginate = require("mongoose-aggregate-paginate-v2");
+
+const mySchema = new mongoose.Schema({
+  /* your schema definition */
+});
+
+mySchema.plugin(aggregatePaginate);
+
+const myModel = mongoose.model("SampleModel", mySchema);
+**Model.aggregatePaginate() Method:**
+Returns a promise.
+**Parameters:**
+[aggregateQuery] {Object}: Aggregate query criteria.
+[options] {Object}:
+[sort] {Object | String}: Sort order.
+[page] {Number}: Current page (Default: 1).
+[limit] {Number}: Documents per page (Default: 10).
+Promise fulfilled with object having properties:
+docs {Array}: Array of documents.
+totalDocs {Number}: Total number of documents.
+limit {Number}: Limit used.
+page {Number}: Current page number.
+
+## Adding Hooks and Methods using Mongoose
+
+Mongoose allows you to add hooks and methods to your schema, providing powerful functionality for managing data before saving it to the database and adding custom methods to your schema.
+
+### Adding Hooks:
+
+#### `pre("save")` Hook:
+
+- **Definition**: The `pre("save")` hook is a middleware hook that executes just before saving a document.
+- **Purpose**: It allows you to perform operations or modifications on the document before it is saved to the database.
+- **Example Usage**:
+
+```javascript
+userSchema.pre("save", async function (next) {
+    your code
+    next();
+});
+
+```
+
+markdown
+Copy code
+## Adding Hooks and Methods using Mongoose
+
+Mongoose allows you to add hooks and methods to your schema, providing powerful functionality for managing data before saving it to the database and adding custom methods to your schema.
+
+### Adding Hooks:
+
+#### `pre("save")` Hook:
+
+- **Definition**: The `pre("save")` hook is a middleware hook that executes just before saving a document.
+- **Purpose**: It allows you to perform operations or modifications on the document before it is saved to the database.
+- **Example Usage**:
+
+```javascript
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+});
+```
+**Adding Methods:**
+User-defined Methods:
+**Definition:** User-defined methods are custom functions added to the schema using the methods property.
+**Purpose:** They provide additional functionality specific to your schema, such as password validation and token generation.
+**Example Usage:**
+```javascript
+userSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password);
+};
+
+modelSchema.methods.generateAccessToken = function () {
+    return jwt.sign(
+        { payload },
+        process.env.ACCCES_TOKEN_SECRET_KEY,
+        { expiresIn: desired expiry}
+    );
+};
+
+modelSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
+        { payload /data},
+        process.env.REFRESH_TOKEN_SECRET_KEY,
+        { expiresIn: expiray }
+    );
+};
+```
+In **summary**, hooks and methods in Mongoose provide essential functionalities such as data validation, encryption, and token generation, enhancing the capabilities of your schemas and models. They allow you to customize the behavior of your application's data layer according to your specific requirements
 
 
