@@ -125,4 +125,22 @@ Now, your Node.js project is connected to MongoDB and ready to use the database 
      ```
 
 Now, your Express middleware is set up in your Node.js project, allowing you to handle HTTP requests and responses efficiently.
+### Blog Mini Overview Model
+
+The Blog Mini Overview Model provides a concise summary of the content covered in the blog, offering readers a quick glance at the key points and topics discussed.
+
+#### Contents:
+
+1. **Introduction**: Brief introduction to the blog mini overview model.
+2. **Key Features**: Highlight the main features and functionalities of the model.
+3. **Usage**: Provide instructions on how to use the model effectively.
+4. **Example**: Showcase an example of the model in action.
+#### Usage:
+
+To use the Blog Mini Overview Model, simply [click here](https://app.eraser.io/workspace/PmlS3lCWuWBjK3FlW5b9?origin=share) to access the content.
+
+
+
+
+
 
