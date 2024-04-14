@@ -311,9 +311,9 @@ Logging out is different from logging in because you cannot prompt the user to e
 Use middleware to verify the user's access token.
 Decode the access token using JWT verify method and extract user information.
 Find the user in the database using the extracted user information.
-If the user exists, add the user object to the request and pass the next flag to the logout controller.
+If the user exists, add the user object to the request and clearcookies and pass the next flag to the logout controller.
 This covers the use of refresh and access tokens in login and logout, which is one of the most important aspects of authentication and user management in backend development.
-
+**NOTE** We have added our cookie-parser middleware in "/" route that is why we can use cookie things here
 **Middleware**
 Example
 ```javascript
