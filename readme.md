@@ -284,3 +284,63 @@ Error Handling: By first storing files locally, you can perform error handling a
 Data Integrity: Storing files locally provides an additional layer of data integrity. You can verify the integrity of the files on the local server before transferring them to Cloudinary, ensuring that the uploaded files are accurate and complete.
 Backup: Keeping a local copy of uploaded files serves as a backup in case of any issues with Cloudinary or other cloud services. It provides an additional layer of redundancy to ensure that files are not lost in case of data loss or service interruptions.
 Overall, uploading files indirectly from Multer to Cloudinary via a local server offers advantages in terms of security, error handling, data integrity, offline access, bandwidth optimization, and backup. It allows for greater control and flexibility in managing file uploads while leveraging the features and benefits of cloud-based storage and services like Cloudinary.
+
+### Creating Login and Logout Controllers
+Login and logout functionalities are crucial tasks for a backend developer. Here's how to create login and logout controllers:
+
+**Requirements For Auth:**
+JWT (JSON Web Tokens)
+Cookie parser
+** Login: **
+Login involves granting access to users for authenticated services. After obtaining the user's email, username, and password, authentication needs to be added. Let's understand the concepts of access token and refresh token:
+
+**Access Token:** A security token that grants a user permission to access certain resources or an API. It contains information about the user, permissions, groups, and timeframes. Access tokens are short-lived and generated during login to the server. If they expire early, the user has to log in again, which can be tidious. A possible solution is a refresh token.
+
+**Refresh Token:** These tokens are long-lived and extend the lifespan of an access token. They're issued alongside access tokens, allowing additional access tokens to be granted when the live access token expires. They're usually securely stored on the authorization server. When an access token expires, the client-side can use the refresh token to request a new access token, avoiding the need for the user to log in again.
+
+**Steps for Login:**
+
+Obtain the user's username, email, and password.
+Generate access and refresh tokens.and save refresh token in user document on databse 
+Pass the tokens to the client in a cookie with the options httpOnly: true and secure: true, ensuring that the client-side cannot modify these tokens.
+Logout:
+Logging out is different from logging in because you cannot prompt the user to enter their credentials again for logout. Instead, middleware is used to verify the user's access token.
+
+**Steps for Logout:**
+
+Use middleware to verify the user's access token.
+Decode the access token using JWT verify method and extract user information.
+Find the user in the database using the extracted user information.
+If the user exists, add the user object to the request and clearcookies and pass the next flag to the logout controller.
+This covers the use of refresh and access tokens in login and logout, which is one of the most important aspects of authentication and user management in backend development.
+**NOTE** We have added our cookie-parser middleware in "/" route that is why we can use cookie things here
+**Middleware**
+Example
+```javascript
+ const verifyJWT = asyncHandler(async (req, res, next) => {
+    try {
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ","");
+        
+        if (!token) {
+            throw new ApiError(401,"Invalid Access Token")
+        }
+        
+        const decodeToken = jwt.verify(token, process.env.ACCCES_TOKEN_SECRET_KEY)
+    
+       const user =  await User.findById(decodeToken?._id).select(
+            "-password -refreshToken"
+        ) // MonoDB method used here
+    
+        if(!user) {
+            throw new ApiError(401,"Inavalid AccesToken")
+        }
+    
+        req.user = user; // add user object in request
+        next();
+    } catch (error) {
+        throw new ApiError(401, error?.message, "Invalid Access Token")
+    }
+})
+// below is how it should be passed 
+router.route("/logout").post(verifyJWT, logoutUser)
+```
