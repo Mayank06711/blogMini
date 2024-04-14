@@ -5,6 +5,19 @@ import { User } from "../models/user.model.js";
 import { uploadOncloudinary, deleteFromCloudinary } from "../utils/cloudinaryFileUpload.js";
 
 
+const generateAccessAndRefreshToken = async (userId) =>{
+     try {
+      const user = await User.findById(userId);
+      const accessToken = await user.generateAccessToken();
+      const refreshToken = await user.generateRefreshToken();
+      user.refreshToken = refreshToken;
+      await user.save({ validateBeforeSave: false })
+      return {accessToken, refreshToken}
+     } catch (error) {
+          throw new ApiError(500,error, "Error while generating access and token")
+     }
+}
+
 const registerUser = asyncHandler(async (req, res) => {
   //steps1 get user information from client
   //steps2 validate user information
@@ -86,19 +99,102 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
 const loginUser = asyncHandler(async (req, res) => {
+  // get data -> body
+  // check if data is valid
+  //find if user eixst or not
+  // check password
+  //generate access and refesh token
+  // send response
     const {username, password,email } = req.body;
 
-    if ([username, password , email].some((value) => value?.trim()==="")) {
+    if (!(username || email)) {
         throw new ApiError(401, "Invalid login details: check your email/username and password")
     }
 
-    const user = await User.findOne({username: username.toLowerCase()});
-})
+    const user = await User.findOne(
+      {
+        $or: [{ username: username.toLowerCase() }, { email }],
+      });
+
+    if (!user) {
+      throw new ApiError(404, "No user found with username or email id")
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect(password); //user not User bcz this method  will work on instance of user User model not User model
+
+    if (!isPasswordCorrect) {
+        throw new ApiError(401,"Invalid user credentials")
+    }
+
+    const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id)
+
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    ) // select what we dont want to include in the response
+
+    //  -- above {user} nd {loggedInUser} are different becuase above user will have empty refreshToken field {see user model} bcz we haven't specified refreshtoken earlier
+    console.log(user, loggedInUser, "user ,  loggedInUser see diffrence"); 
+    
+    const options= {  // since by default cookies can be mmodified by anyone from frint-end or server so by doing this sookies can only be modified from server side
+      httpOnly: true,
+      secure:true,
+     }
+
+     return res.
+     status(200). 
+     cookie("refreshToken", refreshToken, options). // BCZ WE HAVE INSTALLED COOKIE-PARSER and we have inserted middleware cookie-parser() on app.cookie-parser() 
+     cookie("accessToken",accessToken, options). // cookies are two way that can be useed with req and res both
+     json(
+       new ApiResponse(
+         200, // status code
+         { // data returned that we wanted
+          user: loggedInUser,
+          accessToken,
+          refreshToken,
+         },
+         "User successfully logged in" // success message
+       )
+     )
+
+})//DONE!
+
+
+
+const logoutUser = asyncHandler(async (req, res) => {
+   /* -------------STEPS TO LOG  OUT --------------------------------*/ 
+          // step 1: ----  taking user datails from req.user that we have added while as middleware while logout request
+          await  User.findByIdAndUpdate(
+            req.user._id, 
+            {
+              $unset: {
+                refreshToken: 1 //this remove field from databse
+              }
+            },
+            {
+              new: true, // to get updated new value with a refresh token as undefined otherqise we will get same value of refresh token
+            }
+          ) 
+          //  -clear cookies
+          const options = {
+            httpOnly: true,
+            secure: true,
+          }
+          
+          const username = req.user.username;
+          //console.log(req.user, "LOG OUT")
+          return res
+          .status(200)
+          .clearCookie("refreshToken", options)
+          .clearCookie("accessToken", options)
+          .json(new ApiResponse(200, {username}, "User Logged Out"))
+
+})//DONE!
+
 
 export {
      registerUser,
      loginUser,
-    //  logoutUser,
+     logoutUser,
     //  refreshAccessTooken,
     //  changeCurrentPassword,
     //  getCurrentUser,

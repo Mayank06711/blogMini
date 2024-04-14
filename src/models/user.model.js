@@ -83,7 +83,7 @@ userSchema.methods.generateAccessToken = function (){
     )
 }
 
-userSchema.methods.generateRefreshToken = function (){
+userSchema.methods.generateRefreshToken = function (){ // these methods are used generate token using payload provided here like this_id
     return jwt.sign(
          { // this is payload i.e user info will be stored in jwt token
              _id: this._id,
