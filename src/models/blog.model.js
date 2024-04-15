@@ -3,12 +3,12 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"
 const blogSchema = new Schema({
       title:{
         type: String,
-        required: true,
+        required: [true,"title required"],
         uppercase: true,
       },
       content:{
         type: String,
-        required: true,
+        required: [true,"content required"]
       },
       image:{
         type:[String],
@@ -23,6 +23,10 @@ const blogSchema = new Schema({
         type:Boolean,
         default:true,
       },
+      viewCount:{
+        type:Number,
+        default:0,
+      }
 },{timestamps: true});
 
 blogSchema.plugin(mongooseAggregatePaginate);//Adding the plugin to a schema

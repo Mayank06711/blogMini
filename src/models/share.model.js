@@ -13,7 +13,7 @@ const shareSchema = new Schema(
       type: [Schema.Types.ObjectId],
       ref: "User",
     },
-    creater: {
+    creator: {
       // whose blog is being shared array bcz one user might send many blogs of diff author to diff sers
       type: [Schema.Types.ObjectId],
       ref: "User",
