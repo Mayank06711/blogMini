@@ -344,3 +344,41 @@ Example
 // below is how it should be passed 
 router.route("/logout").post(verifyJWT, logoutUser)
 ```
+ ### How to aggregation pipelines in mogoDB
+Before moving further into how to add aggregation one must know what is aggregation what does it return how it works and why to use it ? 
+So lets start with what is aggregation : Aggregation is a process to perform analysis on incoming data and modifiy it using pipeline. aggregation operation can include grouing sorting filtering and mathematics Aggregation operations process multiple documents and return computed results 
+and to perform aggregation operation you can use aggregation pipelines which are nothing but chunks of codes written to do some definite task on incomig document data and pass it to next stage , hence aggregation operations contains different stages called as pipelines.An aggregation pipeline consists of one or more stages that process documents:
+Each stage performs an operation on the input documents. For example, a stage can filter documents, group documents, and calculate values.
+The documents that are output from a stage are passed to the next stage.
+adding pipelines is more simple than u think let say u have movie as schema
+```javascript
+movie.agregate([{},{},{}])
+```
+here aggregate is used on movie instance of Movie model instance
+and aggregate always take array as input ans with in the array we write our pipelines 
+most common practice on writing aggregation pipelines is that first stage is kep for $match operation which is used to filter data with query passed into match, it looks into movie modle of database for given query and if false it returns from there further we perfrom $lookup to perfomr left join  operation between two models of database lets say movie and priceOfMovie so it To perform an equality match between a field from the input documents movies with a field from the documents of the "joined" collection (priceofmovies), the $lookup stage has this **syntax as**
+```javascript
+$lookup:{
+from: <collection to join> here  priceofmovies,
+ localField: <field from the input documents>,
+       foreignField: <field from the documents of the "from" collection>,
+       as: <output array field>
+}
+```
+further if you want to write subpipeline you can add by simply writing 
+```javascript
+$lookup:{
+from: <collection to join> here  priceofmovies,
+ localField: <field from the input documents>,
+       foreignField: <field from the documents of the "from" collection>,
+       as: <output array field>,
+      pipeline:{
+         your code 
+       }
+}
+```
+passing output we can use 
+```javascript 
+$project
+```
+ which helps to determine which fields to pass to next stage or as final output .**NOTE** aggregate return an array of object so be carefull about your usecase
