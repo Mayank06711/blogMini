@@ -454,7 +454,7 @@ const getUserBlogProfile = asyncHandler(async (req, res) => {
     }
     console.log(username,"------------")
     try {
-        const authorProfile = await User.aggregate([
+        const authorProfile = await User.aggregate([ // [{},{},{}] aggregate takes array as input and return arrray and each curly bracket represtn a stage
           {
             $match:{
               username: username?.toLowerCase()
