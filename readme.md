@@ -382,6 +382,21 @@ passing output we can use
 $project
 ```
  which helps to determine which fields to pass to next stage or as final output .**NOTE** aggregate return an array of object so be carefull about your usecase
+**left outer jOIN**
+A left outer join, often abbreviated as just "left join," is a type of database join operation that retrieves all records from the left table (or collection) and the matching records from the right table (or collection). If there is no matching record in the right table, NULL values are returned for the columns from the right table.
+
+In the context of MongoDB's $lookup operator:
+
+The "left" collection refers to the collection you are running the $lookup operation on.
+The "right" collection is the collection you are joining with using the $lookup operator.
+For example, consider two collections: orders and customers. Each order document in the orders collection has a field called customerId, which references the _id field of the corresponding customer in the customers collection.
+
+If you perform a left outer join between the orders and customers collections using the $lookup operator:
+
+All documents from the orders collection will be returned.
+For each document in the orders collection, MongoDB will look up the corresponding customer document in the customers collection based on the customerId field.
+If a matching customer document is found, it will be included in the result as an embedded document.
+If no matching customer document is found, the corresponding field in the result will be null.
 
 ### Agregate AggregatePaginate
 In MongoDB, both aggregate and aggregatePaginate are methods used for performing aggregation operations on a collection. However, they serve slightly different purposes and have different usage patterns.
