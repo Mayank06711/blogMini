@@ -354,9 +354,9 @@ adding pipelines is more simple than u think let say u have movie as schema
 ```javascript
 movie.agregate([{},{},{}])
 ```
-here aggregate is used on movie instance of Movie model instance
+here aggregate is used on movie instance of Movie model 
 and aggregate always take array as input ans with in the array we write our pipelines 
-most common practice on writing aggregation pipelines is that first stage is kep for $match operation which is used to filter data with query passed into match, it looks into movie modle of database for given query and if false it returns from there further we perfrom $lookup to perfomr left join  operation between two models of database lets say movie and priceOfMovie so it To perform an equality match between a field from the input documents movies with a field from the documents of the "joined" collection (priceofmovies), the $lookup stage has this **syntax as**
+most common practice on writing aggregation pipelines is that first stage is kep for $match operation which is used to filter data with query passed into match, it looks into movie model of database for given query and if false it returns from there further we perfrom $lookup to perfomr left outer join  operation between two models of database lets say movie and priceOfMovie so it To perform an equality match between a field from the input documents movies with a field from the documents of the "joined" collection (priceofmovies), the $lookup stage has this **syntax as**
 ```javascript
 $lookup:{
 from: <collection to join> here  priceofmovies,
@@ -382,3 +382,37 @@ passing output we can use
 $project
 ```
  which helps to determine which fields to pass to next stage or as final output .**NOTE** aggregate return an array of object so be carefull about your usecase
+
+### Agregate AggregatePaginate
+In MongoDB, both aggregate and aggregatePaginate are methods used for performing aggregation operations on a collection. However, they serve slightly different purposes and have different usage patterns.
+**Aggregate**: This is a built-in method provided by MongoDB's native driver. It allows you to perform aggregation operations on a collection by constructing an aggregation pipeline. The pipeline consists of multiple stages, each of which performs a specific operation on the input documents. These stages can include operations like filtering, grouping, sorting, projecting, and more.
+
+```javascript
+Copy code
+const result = await Model.aggregate([
+  { $match: { ... }},
+  { $group: { ... }},
+  { $sort: { ... }},
+  // Other stages...
+]);
+```
+**Pros**: Offers full flexibility to construct complex aggregation pipelines tailored to your specific requirements.
+
+**Cons**: Pagination functionality is not built-in, so you need to implement pagination logic manually if required.
+**AggregatePaginate**: This method is provided by third-party libraries like mongoose-aggregate-paginate-v2. It extends the functionality of the native aggregate method by adding pagination support to the aggregation results. This is particularly useful when you have large result sets and need to paginate through them.
+
+```javascript
+Copy code
+const result = await Model.aggregatePaginate([
+  { $match: { ... }},
+  { $group: { ... }},
+  { $sort: { ... }},
+  // Other stages...
+]);
+```
+**Pros**: Simplifies pagination implementation by providing built-in support for paginating aggregation results.
+
+**Cons**: Limited to the functionality provided by the library, may not support all aggregation pipeline stages or options available in the native aggregate method.
+
+**My Advice**
+As per my thinkig using aggregae is good at initial stage of learning because we learn how to write pagination and do different things with our data **mention in pros** but once you feel confortable in this you should move to aggregatepaginate as it has extended features. 
