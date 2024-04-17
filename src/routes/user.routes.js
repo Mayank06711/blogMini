@@ -38,4 +38,5 @@ router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvat
 router.route("/u/:username").get(verifyJWT, getUserBlogProfile)
 router.route("/delete-user").patch(verifyJWT, deleteUser)
 
+
 export default router

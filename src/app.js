@@ -20,10 +20,11 @@ app.use(cookieParser())
 //routes import 
 import userRouter from "./routes/user.routes.js"
 import blogRouter from "./routes/blog.routes.js"
-
+import shareRouter from "./routes/share.routes.js"
 
 //route declarations / api creation
 app.use("/api/v1/user", userRouter) // here /user will act as prefix then whatever is the route of userRouter will be added e.g hhtps://localhost/9000/api/v1/user/regiter etc  
 app.use("/api/v1/blog", blogRouter) // here /blog will act as prefix then '' '' '' '' '' '' '' '' '' 
+app.use("/api/v1/share", shareRouter)// here /blog will act as prefix 
 
 export { app }
