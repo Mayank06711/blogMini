@@ -348,18 +348,30 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
         try {
             const blog = await Blog.findById(blogId)
-    
+            
             if (!blog) {
                 throw new ApiError(404, "Blog not found")
             }
     
-            if (blog.author.toString()!== req.user._id.toString()) {
+            if (blog.author.toString() !== req.user._id.toString()) {
                 throw new ApiError(401, "You are not allowed to this action")
             }
-    
+            
+            const updatedBlog = await Blog.findByIdAndUpdate(
+                blogId,
+                {
+                    $set:{
+                    isPublished:!blog.isPublished,
+                }},
+                { new: true, validateBeforeSave:false }
+            )
+            console.log(updatedBlog, "updated blog")
+            if (!updatedBlog) {
+                 throw new ApiError(500, "Could not update blog status")
+            }
             res
             .status(200)
-            .json(new ApiResponse(200, blog, "blog status toggled successfully"))
+            .json(new ApiResponse(200, updatedBlog, "blog status toggled successfully"))
         } catch (error) {
              throw new ApiError(500, "An error occurred while toggling your blog status:  Please try again")
         }

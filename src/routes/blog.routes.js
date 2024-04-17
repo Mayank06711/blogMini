@@ -34,6 +34,6 @@ router
     .patch(upload.single("image"), updateBlog);
 
 router.route("/toggle/publish/:blogId").patch(togglePublishStatus);
-router.route("/filter-title").get(filterBlogByTitle)
+router.route("/filter-title/:title").get(filterBlogByTitle)
 
 export default router 
