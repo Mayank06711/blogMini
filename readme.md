@@ -382,7 +382,8 @@ passing output we can use
 $project
 ```
  which helps to determine which fields to pass to next stage or as final output .**NOTE** aggregate return an array of object so be carefull about your usecase
-**left outer jOIN**
+ 
+**Left outer join**
 A left outer join, often abbreviated as just "left join," is a type of database join operation that retrieves all records from the left table (or collection) and the matching records from the right table (or collection). If there is no matching record in the right table, NULL values are returned for the columns from the right table.
 
 In the context of MongoDB's $lookup operator:
