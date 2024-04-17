@@ -344,3 +344,91 @@ Example
 // below is how it should be passed 
 router.route("/logout").post(verifyJWT, logoutUser)
 ```
+ ### How to aggregation pipelines in mogoDB
+Before moving further into how to add aggregation one must know what is aggregation what does it return how it works and why to use it ? 
+So lets start with what is aggregation : Aggregation is a process to perform analysis on incoming data and modifiy it using pipeline. aggregation operation can include grouing sorting filtering and mathematics Aggregation operations process multiple documents and return computed results 
+and to perform aggregation operation you can use aggregation pipelines which are nothing but chunks of codes written to do some definite task on incomig document data and pass it to next stage , hence aggregation operations contains different stages called as pipelines.An aggregation pipeline consists of one or more stages that process documents:
+Each stage performs an operation on the input documents. For example, a stage can filter documents, group documents, and calculate values.
+The documents that are output from a stage are passed to the next stage.
+adding pipelines is more simple than u think let say u have movie as schema
+```javascript
+movie.agregate([{},{},{}])
+```
+here aggregate is used on movie instance of Movie model 
+and aggregate always take array as input ans with in the array we write our pipelines 
+most common practice on writing aggregation pipelines is that first stage is kep for $match operation which is used to filter data with query passed into match, it looks into movie model of database for given query and if false it returns from there further we perfrom $lookup to perfomr left outer join  operation between two models of database lets say movie and priceOfMovie so it To perform an equality match between a field from the input documents movies with a field from the documents of the "joined" collection (priceofmovies), the $lookup stage has this **syntax as**
+```javascript
+$lookup:{
+from: <collection to join> here  priceofmovies,
+ localField: <field from the input documents>,
+       foreignField: <field from the documents of the "from" collection>,
+       as: <output array field>
+}
+```
+further if you want to write subpipeline you can add by simply writing 
+```javascript
+$lookup:{
+from: <collection to join> here  priceofmovies,
+ localField: <field from the input documents>,
+       foreignField: <field from the documents of the "from" collection>,
+       as: <output array field>,
+      pipeline:{
+         your code 
+       }
+}
+```
+passing output we can use 
+```javascript 
+$project
+```
+ which helps to determine which fields to pass to next stage or as final output .**NOTE** aggregate return an array of object so be carefull about your usecase
+ 
+**Left outer join**
+A left outer join, often abbreviated as just "left join," is a type of database join operation that retrieves all records from the left table (or collection) and the matching records from the right table (or collection). If there is no matching record in the right table, NULL values are returned for the columns from the right table.
+
+In the context of MongoDB's $lookup operator:
+
+The "left" collection refers to the collection you are running the $lookup operation on.
+The "right" collection is the collection you are joining with using the $lookup operator.
+For example, consider two collections: orders and customers. Each order document in the orders collection has a field called customerId, which references the _id field of the corresponding customer in the customers collection.
+
+If you perform a left outer join between the orders and customers collections using the $lookup operator:
+
+All documents from the orders collection will be returned.
+For each document in the orders collection, MongoDB will look up the corresponding customer document in the customers collection based on the customerId field.
+If a matching customer document is found, it will be included in the result as an embedded document.
+If no matching customer document is found, the corresponding field in the result will be null.
+
+### Agregate AggregatePaginate
+In MongoDB, both aggregate and aggregatePaginate are methods used for performing aggregation operations on a collection. However, they serve slightly different purposes and have different usage patterns.
+**Aggregate**: This is a built-in method provided by MongoDB's native driver. It allows you to perform aggregation operations on a collection by constructing an aggregation pipeline. The pipeline consists of multiple stages, each of which performs a specific operation on the input documents. These stages can include operations like filtering, grouping, sorting, projecting, and more.
+
+```javascript
+Copy code
+const result = await Model.aggregate([
+  { $match: { ... }},
+  { $group: { ... }},
+  { $sort: { ... }},
+  // Other stages...
+]);
+```
+**Pros**: Offers full flexibility to construct complex aggregation pipelines tailored to your specific requirements.
+
+**Cons**: Pagination functionality is not built-in, so you need to implement pagination logic manually if required.
+**AggregatePaginate**: This method is provided by third-party libraries like mongoose-aggregate-paginate-v2. It extends the functionality of the native aggregate method by adding pagination support to the aggregation results. This is particularly useful when you have large result sets and need to paginate through them.
+
+```javascript
+Copy code
+const result = await Model.aggregatePaginate([
+  { $match: { ... }},
+  { $group: { ... }},
+  { $sort: { ... }},
+  // Other stages...
+]);
+```
+**Pros**: Simplifies pagination implementation by providing built-in support for paginating aggregation results.
+
+**Cons**: Limited to the functionality provided by the library, may not support all aggregation pipeline stages or options available in the native aggregate method.
+
+**My Advice**
+As per my thinkig using aggregae is good at initial stage of learning because we learn how to write pagination and do different things with our data **mention in pros** but once you feel confortable in this you should move to aggregatepaginate as it has extended features. 
