@@ -15,13 +15,6 @@ const shareManyBlog = asyncHandler(async (req, res) =>{
 
 }) 
 
-const receiveOneBlog = asyncHandler(async (req, res)=>{
-
-})
-
-const receiveManyBlog = asyncHandler(async (req, res)=>{
-
-})
 
 const undoBlogShares = asyncHandler(async (req, res)=>{
 
@@ -34,8 +27,6 @@ const undoOneBlogShares = asyncHandler(async (req, res)=>{
 export {
     shareOneBlog,
     shareManyBlog,
-    receiveOneBlog,
-    receiveManyBlog,
     undoBlogShares,
     undoOneBlogShares
 }

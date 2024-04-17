@@ -3,8 +3,6 @@ import { verifyJWT } from "../middleware/auth.middleware";
 import {
     shareManyBlog,
     shareOneBlog,
-    receiveOneBlog,
-    receiveManyBlog,
     undoOneBlogShares,
     undoBlogShares
 } from "../controller/share.controller.js"
@@ -17,10 +15,6 @@ router.route("/:receiverId") // we will be sending blog to the username from giv
 
 router.route("/share-m/:receiverId") // we will be sending blog of creator to the receiver id and , blog is extracted title or creatorid from body
 .post(shareManyBlog)
-
-router.route("/receive/:senderId")
-.post(receiveOneBlog)
-.post(receiveManyBlog)
 
 router.route("/undo/:receiverId")
 .post(undoBlogShares)
