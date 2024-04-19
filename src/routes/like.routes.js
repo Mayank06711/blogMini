@@ -14,12 +14,13 @@ router.use(verifyJWT)
 // secure routes
 router.route("/blog")// enterging blog id
 .get(getLikedBlog)
-router.route("/:blogId")
+router.route("/b/:blogId")
 .post(toggleBlogLike)
 
 router.route("/comment")// enterging blog id
 .get(getLikedComments)
-router.route("/:commentId")
+
+router.route("/c/:commentId")
 .post(toggleCommentLike)
 
 export default router;

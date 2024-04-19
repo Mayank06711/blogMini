@@ -2,7 +2,7 @@ import mongoose, { isValidObjectId } from "mongoose"
 import {Comment} from "../models/comment.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
-import asyncHandler from "../utils/asyncHandler.js"
+import {asyncHandler} from "../utils/asyncHandler.js"
 
 
 /*-------------ADDCOMMENT-----------------*/
@@ -27,7 +27,7 @@ const addComment = asyncHandler(async (req, res) => {
         // Creating a new comment document
         const newComment = await Comment.create({
             content: commentContent,
-            blog: video_Id,
+            blog: blogId,
             owner: req.user._id // Assuming user is authenticated and their ID is in req.user._id
         });
 

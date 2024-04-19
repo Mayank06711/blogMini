@@ -12,11 +12,11 @@ const router =  Router();
 
 router.use(verifyJWT)// Apply verifyJWT middleware to all routes in this file
 
-router.route("/") // taking blog id from body
+router.route("/:blogId") // taking blog id from body
 .post(addComment)
+.get(getBlogComments)
 
 router.route("/:commentId")
-.get(getBlogComments)
 .delete(deleteComment)
 .patch(updateComment)
 
