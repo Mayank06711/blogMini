@@ -344,7 +344,29 @@ Example
 // below is how it should be passed 
 router.route("/logout").post(verifyJWT, logoutUser)
 ```
- ### How to aggregation pipelines in mogoDB
+### RESTFull API's
+
+RESTful principles are a set of guidelines for designing web APIs that are consistent, predictable, and easy to understand. These principles help ensure that your API is well-structured and behaves in a standard way, making it easier for developers to work with and integrate into their applications. Here are some key principles of RESTful API design:
+
+**Use of HTTP Methods:** RESTful APIs make use of HTTP methods (GET, POST, PUT, DELETE) to perform CRUD (Create, Read, Update, Delete) operations on resources. Each HTTP method corresponds to a specific action on a resource.
+
+**Resource-Based URL Structure:** URLs should represent resources, and the HTTP methods should indicate the action to be performed on those resources. For example:
+
+/blogs for a collection of blog posts.
+/blogs/{id} for a specific blog post identified by its ID.
+
+**Use of HTTP Status Codes:** HTTP status codes are used to indicate the success or failure of an API request. For example:
+
+200 OK for successful responses.
+404 Not Found for resources that cannot be found.
+400 Bad Request for malformed requests.
+**Statelessness:** Each request from a client to the server should contain all the information necessary to process the request. The server should not rely on any client state being stored on the server between requests.
+
+**Use of JSON as the Data Format:** JSON (JavaScript Object Notation) is the preferred data format for RESTful APIs due to its simplicity, readability, and widespread support.
+
+**Versioning:** APIs should be versioned to prevent breaking changes for existing clients when introducing new features or changes to the API.
+
+### How to aggregation pipelines in mogoDB
 Before moving further into how to add aggregation one must know what is aggregation what does it return how it works and why to use it ? 
 So lets start with what is aggregation : Aggregation is a process to perform analysis on incoming data and modifiy it using pipeline. aggregation operation can include grouing sorting filtering and mathematics Aggregation operations process multiple documents and return computed results 
 and to perform aggregation operation you can use aggregation pipelines which are nothing but chunks of codes written to do some definite task on incomig document data and pass it to next stage , hence aggregation operations contains different stages called as pipelines.An aggregation pipeline consists of one or more stages that process documents:
@@ -432,3 +454,76 @@ const result = await Model.aggregatePaginate([
 
 **My Advice**
 As per my thinkig using aggregae is good at initial stage of learning because we learn how to write pagination and do different things with our data **mention in pros** but once you feel confortable in this you should move to aggregatepaginate as it has extended features. 
+
+### Explaining Share Model 
+Lets first see how does it look like (MongoDB model)
+```javascript
+import mongoose, { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"
+const shareSchema = new Schema(
+  {
+    sender: {
+      // one who is sending blog
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    receiver: {
+      //to whome you send blog : reciever
+      type: [Schema.Types.ObjectId],
+      ref: "User",
+    },
+    creator: {
+      // whose blog is being shared array bcz one user might send many blogs of diff author to diff sers
+      type: [Schema.Types.ObjectId],
+      ref: "User",
+    },
+  },
+  { timestamps: true }
+);
+
+shareSchema.plugin(mongooseAggregatePaginate);
+export const Share = mongoose.model("Share", shareSchema);
+
+```
+So above you saw model now lets break it down                                           
+Creator of any blog will be same no matter how many times same blog is sent or recieved so but different blogs would have different or same creator, therefore when a sender sends a blog, sender can send blog of same or different creator and also sender can send either one or more than one receiver that is why giving priority to the sender this model has sender as string but creator and reciver as array of string.
+Now what are possible operation that we can do on this model?
+```javascriptimport
+{ Share } from "../models/share.model";
+import { User } from "../models/user.model";
+import { Blog } from "../models/blog.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+
+
+const shareOneBlog = asyncHandler(async (req, res) =>{ // extract reciverId from params, sender from res.user._id and  title or other from body 
+
+}) 
+
+
+const shareManyBlog = asyncHandler(async (req, res) =>{// extract reciverId from params, sender from res.user._id and  title or other from body but find all blogs and share all
+
+}) 
+
+
+const undoBlogShares = asyncHandler(async (req, res)=>{ // simply delete blog share model
+
+})
+
+const undoOneBlogShares = asyncHandler(async (req, res)=>{
+
+})
+
+export {
+    shareOneBlog,
+    shareManyBlog,
+    undoBlogShares,
+    undoOneBlogShares
+}
+
+```
+I hope I was able to make it clear.
+
+### Receiver Model
