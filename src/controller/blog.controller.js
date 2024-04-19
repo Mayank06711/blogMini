@@ -178,8 +178,8 @@ const getAllBlogs = asyncHandler(async (req, res) => {
                { 
                 $lookup:{
                     from: "shares",
-                    localField: "_id",
-                    foreignField: "creator",
+                    localField: "_id", // that is our blog model
+                    foreignField: "sentBlog", // that is our share model
                     as: "blogShares",
                   pipeline:[
                        {
@@ -188,35 +188,22 @@ const getAllBlogs = asyncHandler(async (req, res) => {
                             receiver:1
                           }        
                         },
-                       {
-                         $addFields:{
-                            blogShares:{
-                            blogShares:"$blogShares" //// all the likes on each blog
-                            }
-                        }
-                    }
                   ]
                 }
             },
                { 
                 $lookup:{
                     from: "comments",
-                    localField: "_id",
-                    foreignField: "owner",
+                    localField: "_id",//in blog model
+                    foreignField: "blog",//in comment model
                     as: "commentsOnBlog",
                   pipeline:[
                         {
                             $project:{
+                                content:1,
                                 blog:1,
                             }
                         },
-                        {
-                            $addFields:{
-                                commentsOnBlog:{
-                                    commentsOnBlog:"$commentsOnBlog"
-                                }
-                            }
-                        }
                   ]
                 }
             },
@@ -224,21 +211,15 @@ const getAllBlogs = asyncHandler(async (req, res) => {
                  $lookup:{
                     from: "likes",
                     localField: "_id",
-                    foreignField: "likedBy",
+                    foreignField: "blog",
                     as: "likesOnBlog",
                   pipeline:[
                     {
                         $project:{
                             blog:1,
+                            likedBy:1
                         }
                     },
-                    {
-                        $addFields:{
-                            likesOnBlog:{
-                                likesOnBlog:"$likesOnBlog"
-                            }
-                        }
-                    }
                   ]
                 }
             },
@@ -280,7 +261,7 @@ const getAllBlogs = asyncHandler(async (req, res) => {
         res
         .status(200)
         .json(
-          new ApiResponse(200, {blogsAggregated,blogs},  "Successfully fetched all blogs")
+          new ApiResponse(200, {blogsAggregated,blogs, blogs},  "Successfully fetched all blogs")
          )
 
     } catch (error) {

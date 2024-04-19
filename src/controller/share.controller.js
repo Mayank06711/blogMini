@@ -23,13 +23,13 @@ const shareOneBlog = asyncHandler(async (req, res) =>{
      
     try {
         const sender = await User.findById(senderId)
-
+        
        if (!sender){
          throw new ApiError(404, "You can not send blogs: Register if not else try again after login again")
        }
 
        const receiver = await User.findById(receiverId)
-    
+      
       if (!receiver){
          throw new ApiError(404, "Receiver not found")
        }
@@ -37,19 +37,21 @@ const shareOneBlog = asyncHandler(async (req, res) =>{
         // find user if blog model
       const blog = await Blog.findById(blogId)
       
-      if (!blog || blog.isPublished != true){
+      if (!(blog || isPublished)){
          throw new ApiError(404, "Blog not found")
       }
-
+      console.log("ebefkjg")
       const existingShare = await Share.findOne({ receiver: receiverId, creator: blog.author, sender:senderId, sentBlog:blogId })
-     
+     console.log(existingShare,"ijebf")
       if (existingShare && existingShare != null) {
+        console.log("1")
         res
        .status(201)
        .json(new ApiResponse(201, {blog , existingShare}, "Blog shared successfully"))
        return
      }
    else{
+    console.log("@")
      const share = await Share.create(
         {
             receiver:receiverId,
