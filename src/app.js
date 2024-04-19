@@ -8,9 +8,9 @@ const app = express();
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true,
-}))
+})) // to use this server from frontend side
 
-app.use(express.json({limit: "20kb"}));
+app.use(express.json({limit: "20kb"})); // help to parse incoming req and extract things from request
 app.use(express.urlencoded({extended: true, limit:"20kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
@@ -21,10 +21,14 @@ app.use(cookieParser())
 import userRouter from "./routes/user.routes.js"
 import blogRouter from "./routes/blog.routes.js"
 import shareRouter from "./routes/share.routes.js"
+import likeRouter from "./routes/like.routes.js"
+import commentRouter from "./routes/comment.routes.js"
 
 //route declarations / api creation
 app.use("/api/v1/user", userRouter) // here /user will act as prefix then whatever is the route of userRouter will be added e.g hhtps://localhost/9000/api/v1/user/regiter etc  
 app.use("/api/v1/blog", blogRouter) // here /blog will act as prefix then '' '' '' '' '' '' '' '' '' 
 app.use("/api/v1/share", shareRouter)// here /blog will act as prefix 
+app.use("/api/v1/like", likeRouter)
+app.use("/api/v1/comment", commentRouter)
 
 export { app }

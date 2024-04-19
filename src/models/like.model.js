@@ -4,12 +4,12 @@ const likeSchema = new Schema(
     {
         comment:  // if we like a comment 
         {
-            type:[Schema.Types.ObjectId],// commment[0] is comment on blog[0] by user
+            type:Schema.Types.ObjectId,
             ref:"Comment",
         },
         blog: // if we like a blog
         {
-            type:[Schema.Types.ObjectId],// blog[0] will contain first like of user 
+            type:Schema.Types.ObjectId,
             ref:"Blog"
         },
         likedBy: // who liked 

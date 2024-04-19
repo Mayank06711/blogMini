@@ -334,11 +334,24 @@ const changeCurrentPassword = asyncHandler(async (req, res)  => {
 
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-    
-         return res
-         .status(200)
-         .json(new ApiResponse(200, req.user, "User details fetched succesfully"))
-
+     try {
+      const user = await User.findById(req.user._id)
+      if (!user) {
+        throw new ApiError(404, "User not found")
+      }
+      const userFound = {
+       username: user.username,
+       fullName: user.fullName,
+       email: user.email,
+       role: user.role,
+       bio: user.bio,
+      }
+      return res
+      .status(200)
+      .json(new ApiResponse(200, userFound, "User details fetched succesfully"))
+     } catch (error) {
+      throw new ApiError(500, "An error occured while getting current user")
+     }
 })//DONE!
 
 
