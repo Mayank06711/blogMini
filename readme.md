@@ -526,4 +526,6 @@ export {
 ```
 I hope I was able to make it clear.
 
-### Receiver Model
+### Client Side Integration 
+Here I will discuss about how to connect server with client side and take data from server database and serve it to client.So lets tighten our seat belts to get on new journey which is going to be a roller coaster of confussion and hardules.
+ **Initialisation**
