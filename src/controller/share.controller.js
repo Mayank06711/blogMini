@@ -37,7 +37,7 @@ const shareOneBlog = asyncHandler(async (req, res) =>{
         // find user if blog model
       const blog = await Blog.findById(blogId)
       
-      if (!(blog || isPublished)){
+      if (!(blog || blog.isPublished)){
          throw new ApiError(404, "Blog not found")
       }
       console.log("ebefkjg")

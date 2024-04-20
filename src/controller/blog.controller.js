@@ -263,7 +263,6 @@ const getAllBlogs = asyncHandler(async (req, res) => {
         .json(
           new ApiResponse(200, {blogsAggregated,blogs, blogs},  "Successfully fetched all blogs")
          )
-
     } catch (error) {
       throw new ApiError(500, "An error while fetching all blogs")
     }

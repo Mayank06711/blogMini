@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/apiError.js";
-import { ApiResponse } from "../utils/apiResponse.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { uploadOncloudinary, deleteFromCloudinary } from "../utils/cloudinaryFileUpload.js";
 import  jwt  from "jsonwebtoken";
@@ -31,7 +31,7 @@ const registerUser = asyncHandler(async (req, res) => {
   //steps9 return response
 
                       //step1
-  const { username, email, password, fullName, role } = req.body;
+  const { username, email, password, bio, fullName, role } = req.body;
   console.log(username, email, password, fullName, role);
 
               // Step2
@@ -43,14 +43,22 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required fields");
   }
 
-  // Step3
-  const existedUser = await User.findOne({
-      $or: [{ email}, {username}]
-  });
- console.log(existedUser)
-  if (existedUser) {
-    throw new ApiError(409, "Email or username already exists");
-  }
+             // Step3
+    const existedUserEmail = await User.findOne({
+        email:email
+    });
+    console.log(existedUserEmail)
+    if (existedUserEmail) {
+    throw new ApiError(409, "Email already exists :try login");
+    }
+
+    const existedUser = await User.findOne({
+       username:username
+    });
+    console.log(existedUser)
+     if (existedUser) {
+      throw new ApiError(409, "username already taken");
+     }
 
   // Step4
   const avatarLocalPath = req.files?.avatar[0].path; // bcz of multer storage 2ns cd originalfilename and  name:"avatar" bcs in register route name is this
@@ -67,12 +75,13 @@ const registerUser = asyncHandler(async (req, res) => {
          // step6
  const user = await User.create(
     {
-        username: username.toLowerCase(),
+        username,
         email, // this is same as others
         password: password,
         fullName: fullName,
         role: role,
-        avatar: avatarUploaded.url,
+        bio: bio||"",
+        avatar: avatarUploaded.secure_url,
     })
 
    const createUser = await User.findById(user._id).select(
@@ -109,13 +118,13 @@ const loginUser = asyncHandler(async (req, res) => {
     const {username, password,email } = req.body;
 
     if (!(username || email)) {
-        throw new ApiError(401, "Invalid login details: check your email/username and password")
+        throw new ApiError(401, " email or username not provided");
     }
 
     try {
       const user = await User.findOne(
         {
-          $or: [{ username: username.toLowerCase() }, { email }],
+          $or: [{ username: username.toLowerCase() }, { email: email.toLowerCase()}],
         });
   
       if (!user) {
@@ -125,7 +134,7 @@ const loginUser = asyncHandler(async (req, res) => {
       const isPasswordCorrect = await user.isPasswordCorrect(password); //user not User bcz this method  will work on instance of user User model not User model
   
       if (!isPasswordCorrect) {
-          throw new ApiError(401,"Invalid user credentials")
+          throw new ApiError(401,"Invalid user password")
       }
   
       const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id)
