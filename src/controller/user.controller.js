@@ -115,8 +115,8 @@ const loginUser = asyncHandler(async (req, res) => {
   // check password
   //generate access and refesh token
   // send response
-    const {username, password,email } = req.body;
-
+    const {username, password, email } = req.body;
+  console.log(username, password, email);
     if (!(username || email)) {
         throw new ApiError(401, " email or username not provided");
     }
@@ -124,7 +124,7 @@ const loginUser = asyncHandler(async (req, res) => {
     try {
       const user = await User.findOne(
         {
-          $or: [{ username: username.toLowerCase() }, { email: email.toLowerCase()}],
+          $or: [{ username: username }, { email: email}],
         });
   
       if (!user) {
