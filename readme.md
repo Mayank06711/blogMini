@@ -123,7 +123,7 @@ Now, your Node.js project is connected to MongoDB and ready to use the database 
      ```javascript
      export { app };
      ```
-
+     
 Now, your Express middleware is set up in your Node.js project, allowing you to handle HTTP requests and responses efficiently.
 ### Blog Mini Overview Model
 
@@ -528,4 +528,331 @@ I hope I was able to make it clear.
 
 ### Client Side Integration 
 Here I will discuss about how to connect server with client side and take data from server database and serve it to client.So lets tighten our seat belts to get on new journey which is going to be a roller coaster of confussion and hardules.
- **Initialisation**
+To integrate your server with the client-side using React and Axios, follow these steps:
+Create a folder in your main folder and name it as client or frontend or whatever you want and then go to that folder and open integrated terminal and run following commands
+```javascript
+    npm create vite@latest .
+```
+Then follow the steps that your get while creating your vite app like give name of your project, choose react library and javascript and then enter, this will create your project only so now you will have two option as
+```javascript
+npm i 
+npm run dev
+```
+run these command in terminal in sequence.
+Click on localhost:address and now you will have a screen with vite+react project.
+Clear all the unnecessary code that you do not want in your projcect. This is all set up for client side project now time to move on.
+Create folder in src like components, utils etc to start writing your react code.To style your componets/project you can use any of the styling method like using CSS or SASS or latest tailwind **Used in this project**
+**Checking connection between server and client to get confidence is our top most priority so now you can use either fetch or axios (I prefer axios for this).
+```javascript
+npm i axios
+```
+Now after installing axios what you need first is to create folder name api inside src and then inside that folder you should create axios.js file something like this
+```javascript
+import axios from "axios"
+
+
+export default axios.create({
+  baseURL: "http://localhost:your localhost address
+});
+```
+Now for testing purpose create any reqeust from user to server make sure while testing only request to those url which are not authenticated, let say you have **created a axios get request** 
+so you might face an error realted to CORS(Cross Origin Resource Sharing) **Discussed Above** in CORS explanation,so back to topic since you got an error related to CORS you can now do two things:
+1 **Proxy setting** In your frontend side go to vite config file and set proxy or go to server side and where whitelist your client localhost address, whereever you have applied CORS middleware.
+This will fix the error and now you will be getting reponse from server.
+Till now you will get confident that your both sides aare working fine and with this confident you can start writing your React code and crate as componets to render through: ```javascript <App /> ```
+My advice is to create authenticated components first so that you can keep checking you incoming data and work with that data as needed.
+What generally I do is that I create a Login component first now if you are following this repo code below is the Login component but of course sice its first component it is not complete yet but good enough for you to learn how to write Login component using React and Tailwind
+```javascript
+import { useState, useEffect, useContext, useRef } from "react";
+import axios from "../../api/axios.js"  
+const LOGIN_URL = "/user/login";
+import AuthContext from "../../context/authContext";
+
+
+
+const Login = () => {
+  /*----------------------- Declaring state Variables -------------------------*/
+  
+  const {setAuth} = useContext(AuthContext)
+  const [user, setUser] = useState() /// i will be using this after creating navigation button of login it will turn off login page once it is successfully loggedin
+  
+        //declaring reference to err and user input fields
+  const userRef = useRef()
+  const errRef = useRef()
+
+         // for displaying false and success messages 
+  const [LoginResult, setLoginResult] = useState(false)
+  
+         // for error messages and success messages
+  const [errMgs, setErrMsg] = useState("") 
+ 
+               // State for form input values
+  const [credentials, setCredentials] = useState({
+    email: "", // user email or username
+    password: "", // password 
+    username:"" // username 
+  });
+
+        // to focus on email/username inputs when it render first time , it does not have any dependencies so it will be work everytime this component renders
+   useEffect(()=>{  
+    if (!LoginResult) {  //userRef.current is undefined if our userRef.current might not be available at that moment(loginREsult = true). you call userRef.current.focus() in the useEffect hook, it throws an error because userRef.current is undefined. To fix this issue, you should conditionally call focus() on userRef.current only when LoginResult is false
+        userRef.current.focus();
+      }
+   }, [LoginResult]);
+    
+       // Clear error message when credentials change
+  useEffect(()=>{
+      setErrMsg("")
+  }, [credentials])
+
+
+  //Function to handle form input changes
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    // Update credentials based on input field name
+    setCredentials((prevCredentials) => ({
+      ...prevCredentials,
+      [name]: value,
+    }));
+  };
+
+  // funtion to handle submit 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+
+      // Check if the entered value is a valid email address
+      const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(credentials.email);
+      
+      // If it's a valid email address, set it to the 'email' field; otherwise, set it to the 'username' field
+      const loginData = isValidEmail
+      ? { email: credentials.email, password: credentials.password }
+      : { username: credentials.email, password: credentials.password };
+
+      console.log(credentials, "im logging in")
+
+
+      // Making a POST request to the LOGIN_URL with loginData as the request body
+      const response = await axios.post(LOGIN_URL, 
+      loginData,
+      {
+         // Setting headers for the request
+       headers: { "Content-Type": "application/json" },
+          // Enabling credentials to be sent with the request (e.g., cookies)
+       withCredentials: true,
+      });
+
+      console.log(JSON.stringify(response?.data));
+      //console.log(JSON.stringify(response))
+      console.log(credentials, errMgs, "credentials in login");
+      const accessToken = response?.data?.accessToken
+      const refreshToken = response?.data?.refreshToken
+      const loggedInUser = response?.data?.username 
+           // Storing user authentication data inside the auth object
+      setAuth({ loggedInUser, refreshToken, accessToken });
+
+         // Resetting form input fields after successful login
+      setCredentials({ emailEnteredInForm: "", password: "" });
+
+        // Setting LoginResult to true to display the login success message
+      setLoginResult(true);
+
+    } catch (error) {
+        if(!error?.response){
+          setErrMsg("No server reponse")
+        }
+        else if(error.response?.status === 400){
+          setErrMsg("Invalid email or password")
+        }
+        else if(error.response?.status === 401){
+            setErrMsg("Unauthorized")
+        }
+        else{
+        setErrMsg("Login failed")
+        }
+        errRef.current.focus()
+    }
+  };  
+
+
+  return (
+    <>
+    {
+    LoginResult ? (
+        <section>
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+           Login Successfully
+        </h2>
+        <p className="mt-10 text-center text-sm text-gray-500">
+         Click!
+          <a
+            href="#" // TODO: home url
+            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+          >
+          Return Home
+          </a>
+        </p>
+        </section>
+    ):(
+       <section className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+        <p
+            ref={errRef}
+            className={`${
+                errMgs ? "block" : "hidden" // Show the paragraph if errMgs exists, otherwise hide it
+            } text-red-500 text-sm font-bold leading-3 mb-2 mt-2`}
+            aria-live = "assertive"
+        >
+        {errMgs}    
+       </p>
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <img
+          className="mx-auto h-14 w-auto"
+          src="https://cdn-icons-png.flaticon.com/512/6681/6681204.png"
+          alt="BlogMini"
+        />
+        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        Welcome back! Please Login
+        </h2>
+      </div>
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form
+          className="space-y-6"
+          action="#"
+          onSubmit={handleSubmit}
+        >
+          <div>
+          <label htmlFor="emailEnteredInForm" className="block text-sm font-medium leading-6 text-gray-800">Email/Username</label>
+            <div className="mt-2">
+              <input
+                type="text"
+                id="emailEnteredInForm"
+                name="email"
+                value={credentials.email}
+                autoComplete="off"
+                ref={userRef}
+                onChange={handleChange}
+                placeholder="Email/username"
+                required
+                className="block w-full rounded-md border-1 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div>
+          </div>
+        
+          <div>
+            <div className="flex items-center justify-between">
+            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">Password</label>
+              <div className="text-sm">
+                <a
+                  href="#" // send him to link of forget password 
+                  className="font-semibold text-indigo-600 hover:text-indigo-500"
+                >
+                  Forgot password?
+                </a>
+              </div>
+            </div>
+            <div className="mt-2">
+              <input 
+                type="password"
+                id="password"
+                name="password"
+                value={credentials.password}
+                onChange={handleChange}
+                placeholder="Password"
+                minLength={8}
+                required
+                className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Login
+            </button>
+          </div>
+        </form>
+
+        <p className="mt-10 text-center text-sm text-gray-500">
+          Need an account?
+          <a
+            href="#" // TODO: add regiter url
+            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+          >
+          Registor
+          </a>
+        </p>
+      </div>
+       </section>
+    )}
+    </>
+  );
+};
+
+
+export default Login;
+```
+now you can get explanation of this component using Chatgpt but below are important definitions which you might not understand using chatGpt
+**useEffect**:
+
+Every time your component renders, React will update the screen and then run the code inside useEffect. In other words, useEffect “delays” a piece of code from running until that render is reflected on the screen. This can be useful for performing side effects in function components. For example, you might use useEffect to fetch data from an API, subscribe to a WebSocket, or set up event listeners. By default, useEffect runs after every render, including the initial render. However, you can control when it runs by providing dependencies as the second argument to useEffect. If the dependencies change between renders, useEffect will run again. If you don't specify any dependencies, useEffect will run after every render.
+
+**useRef**: When you want a component to “remember” some information, but you don’t want that information to trigger new renders, you can use a ref.Call the useRef Hook and pass the initial value that you want to reference as the only argument useRef returns an object like this:
+
+{
+current:value you pass to your ref
+}
+It’s like a secret pocket of your component that React doesn’t track. useState: It is most common and simle hook use to set or reset any specific value/targeted-value of a component.React uses this hook to render change only on that target element without re-rendering of page.
+
+ **useCallback**:
+ It is a hook used for memoization purpose, it optimises the performance react code. It takes two parameters as input one is a function value that you want to cache and other is array o dependencies:These are often paramters of function used by useCallback.It can be used for: Skipping re-rendering of components Updating state from a memoized callback.
+**Authentication**:
+```javacript
+import { createContext ,useState} from "react";
+
+const default AuthContext  = createContext({});
+import AuthContext from "./authContext";
+
+export  const AuthProvider = ({ children })=>{
+    const [auth, setAuth] = useState({});
+    // const [user, setUser] = useState(null); we can pass it as auth and authprovider user, setUser
+    return (
+        <AuthContext.Provider value={{auth, setAuth}}>
+            {children}
+        </AuthContext.Provider>
+    )
+}
+
+```
+
+**createContext**: This function is used to create a context object in React. 
+Context provides a way to pass data through the component tree without having to pass props down 
+manually at every level.
+
+**useState**: This is a React Hook that allows functional components to manage state. 
+It returns a stateful value and a function to update that value.
+
+**AuthContext**: This is a context object created using createContext(). 
+It will be used to share authentication-related data (such as user authentication status, user information, etc.) 
+throughout the component tree.
+
+**AuthProvider**: This is a custom component that serves as the provider for the AuthContext.
+ It wraps around other components and provides them with access to the authentication data stored in the
+  context. It uses the useState hook to manage the authentication state.
+
+**children**: This is a special prop in React that represents the child components nested inside 
+the AuthProvider. By passing children as a prop, any component wrapped in the AuthProvider will 
+have access to the authentication context.
+
+
+**auth**: This state variable holds authentication-related data, such as user authentication status, 
+user information, etc.
+
+**setAuth**: This function is used to update the auth state. 
+It is provided by the useState hook and allows components to modify the authentication data stored in 
+the context.
+
+**Thinking about UI declaratively**
+1>Identify your component’s different visual states. 2>Determine what triggers those state changes. 3>Represent the state in memory using useState. 4>Remove any non-essential state variables. 5>Connect the event handlers to set the state.
