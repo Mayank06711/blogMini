@@ -28,6 +28,7 @@ const Login = () => {
     username:"" // username 
   });
 
+  const [closeButton, setCloseButton] = useState(false)
         // to focus on email/username inputs when it render first time , it does not have any dependencies so it will be work everytime this component renders
    useEffect(()=>{  
     if (!LoginResult) {  //userRef.current is undefined if our userRef.current might not be available at that moment(loginREsult = true). you call userRef.current.focus() in the useEffect hook, it throws an error because userRef.current is undefined. To fix this issue, you should conditionally call focus() on userRef.current only when LoginResult is false
@@ -40,7 +41,9 @@ const Login = () => {
       setErrMsg("")
   }, [credentials])
 
-
+  const toggleCloseButton = ()=>{
+    setCloseButton(!closeButton)
+  }
   //Function to handle form input changes
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -109,9 +112,9 @@ const Login = () => {
     }
   };  
 
-
   return (
     <>
+    <div className={`fixed inset-0 flex items-center justify-center z-50 backdrop-filter backdrop-blur-sm ${closeButton? "hidden" : ""}`}>
     {
     LoginResult ? (
         <section>
@@ -122,14 +125,15 @@ const Login = () => {
          Click!
           <a
             href="#" // TODO: home url
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+            className="font-bold leading-6 text-indigo-600 hover:text-indigo-500"
+            onClick={toggleCloseButton}
           >
           Return Home
           </a>
         </p>
         </section>
     ):(
-       <section className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+       <section className="flex min-h-full  flex-col justify-center px-6 py-12 lg:px-8">
         <p
             ref={errRef}
             className={`${
@@ -137,13 +141,19 @@ const Login = () => {
             } text-red-500 text-sm font-bold leading-3 mb-2 mt-2`}
             aria-live = "assertive"
         >
-        {errMgs}    
+        {errMgs} 
+        <hr className="sm:mx-24" />
+        <a href="#" 
+        className="font-semibold text-indigo-600 hover:text-indigo-500"
+        onClick={toggleCloseButton} // re render the login page TODO
+        >Try Again</a>   
        </p>
+       
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           className="mx-auto h-14 w-auto"
           src="https://cdn-icons-png.flaticon.com/512/6681/6681204.png"
-          alt="BlogMini"
+          alt="Avatar"
         />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
         Welcome back! Please Login
@@ -222,6 +232,7 @@ const Login = () => {
       </div>
        </section>
     )}
+    </div>
     </>
   );
 };
