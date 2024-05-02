@@ -1,14 +1,13 @@
 import {FiMenu} from "react-icons/fi"
 import { IoIosNotifications } from "react-icons/io";
 import { IoCloseOutline } from "react-icons/io5";
-import  { useState, useEffect, useRef, useCallback } from "react";
-import Login from "../login/Login.jsx"
-import ProfileMenu from "./profile/profileMenu.jsx";
-import Notification from "./notification/notification.jsx";
-import axios from "../../api/axios";
+import  { useState} from "react";
+import ProfileMenu from "../Profile/profileMenu.jsx";
+import Notification from "./Notification/notification.jsx";
+import Search from "../Search/search.jsx"
 const Navbar = ()=>{
     // usestate for sidebar
-    const [sidebar, setSidebar] = useState(true)
+    const [sidebar, setSidebar] = useState(false)
     const showSidebar = ()=>{
         setSidebar(!sidebar)
     }
@@ -29,41 +28,18 @@ const Navbar = ()=>{
             setprofileMenuVisibility(false)
         }
     }
-   // login componet rendering 
-    const [showLogin, setShowLogin] = useState(false)
-    const showLoginPage = ()=>{
-        setShowLogin(!showLogin)
-        if(notifiactionVisible){
-            setNotifiActionVisible(false)
-        }
-        if(profileMenuVisible){
-            setprofileMenuVisibility(false)
-        }
-    }
 
     const navLinks = [
         {
-            label:"Home",
+            label:"Blogs",
             link:"#",
         },
         {
-            label:"Blog",
-            link:"#",
-        },
-        {
-            label:"Contact",
+            label:"Post",
             link:"#",
         },
         {
             label:"About",
-            link:"#",
-        },
-        {
-            label:"Login",
-            link:"#",
-        },
-        {
-            label:"Register",
             link:"#",
         }
     ]
@@ -84,9 +60,6 @@ const Navbar = ()=>{
     ]
 
 
-console.log( profileMenuVisible, "logina nd sdiebar")
-
-
     return (
        <main>
          <nav className =" flex justify-between px-8 items-center py-6 sm:px-24">
@@ -95,7 +68,7 @@ console.log( profileMenuVisible, "logina nd sdiebar")
                   {/* menu */}  
            <FiMenu className="text-3xl sm:hidden cursor-pointer" onClick={showSidebar}/>
                 {/* logo */}
-            <a href="" className="text-4xl font-mono">
+            <a href="" className="sm:text-4xl text-2xl font-mono">
                 BlogMini
             </a>
             </section>
@@ -110,12 +83,7 @@ console.log( profileMenuVisible, "logina nd sdiebar")
                     })
                 }
              </div>
-             {!showLogin && <button
-             onClick={showLoginPage}
-             className="hidden md:absolute md:w-20 md:h-8 md:right-2 md:flex md:items-center md:justify-center focus-visible:outline bg-indigo-600 py-1.5 text-sm font-semibold leading-6 shadow-sm hover:bg-indigo-500 text-white px-4 rounded-full "
-             >
-             Login
-             </button>}
+             <Search />
             {/* mobile menu */}
             <div className= {`${sidebar ? "translate-x-0":"-translate-x-full"} fixed h-full w-screen sm:hidden bg-black/50 backdrop-blur-sm top-0 right-0 transition-all`}>
                 <section className="text-black bg-white flex-col absolute left-0 top-0 h-screen p-8 gap-8 z-50 w-56 flex">
@@ -147,8 +115,6 @@ console.log( profileMenuVisible, "logina nd sdiebar")
           {/* mobile menu for profilee */}
           {profileMenuVisible && <ProfileMenu profileLinks={profileLinks} />}
        </nav>
-       {/* login window */}
-       {showLogin && <Login />}
        <hr className=" sm:mx-24"/>
        </main>
     )

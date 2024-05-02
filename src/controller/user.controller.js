@@ -31,12 +31,12 @@ const registerUser = asyncHandler(async (req, res) => {
   //steps9 return response
 
                       //step1
-  const { username, email, password, bio, fullName, role } = req.body;
-  console.log(username, email, password, fullName, role);
+  const { username, email, password, bio, fullName } = req.body;
+  console.log(username, email, password, fullName);
 
               // Step2
   if (
-    [username, email, password, fullName, role].some(
+    [username, email, password, fullName].some(
       (value) => value?.trim() === ""
     )
   ) {
@@ -49,7 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
     });
     console.log(existedUserEmail)
     if (existedUserEmail) {
-    throw new ApiError(409, "Email already exists :try login");
+    throw new ApiError(401, "Email already exists :try login");
     }
 
     const existedUser = await User.findOne({
@@ -60,28 +60,29 @@ const registerUser = asyncHandler(async (req, res) => {
       throw new ApiError(409, "username already taken");
      }
 
-  // Step4
-  const avatarLocalPath = req.files?.avatar[0].path; // bcz of multer storage 2ns cd originalfilename and  name:"avatar" bcs in register route name is this
-  if (!avatarLocalPath) { // sicne our user schema don't have avatr as required true for avatr
-    throw new ApiError(400, "Avatar is required");
-  }
+      // Step4
+      // console.log(req)
+      const avatarLocalPath = req.files?.avatar[0].path; // bcz of multer storage 2ns cd originalfilename and  name:"avatar" bcs in register route name is this
+      console.log(avatarLocalPath,"hgfhfghg")
+      if (!avatarLocalPath) { // sicne our user schema don't have avatr as required true for avatr
+       throw new ApiError(400, "Avatar is required");
+     }
            // Step5 
- const avatarUploaded = await uploadOncloudinary(avatarLocalPath)
+    const avatarUploaded = await uploadOncloudinary(avatarLocalPath)
 
- if (!avatarUploaded) {
-    throw new ApiError(400, "Avatar is required");
- }
+     if (!avatarUploaded) {
+       throw new ApiError(500, "Avatar is not uploaded correctly try again");
+     }
 
          // step6
- const user = await User.create(
+    const user = await User.create(
     {
         username,
         email, // this is same as others
         password: password,
         fullName: fullName,
-        role: role,
         bio: bio||"",
-        avatar: avatarUploaded.secure_url,
+        avatar: avatarUploaded.secure_url || "",
     })
 
    const createUser = await User.findById(user._id).select(
@@ -101,7 +102,7 @@ const registerUser = asyncHandler(async (req, res) => {
     //console.log(avatrDeleted,"avatar deleted")
     throw new ApiError(500, "Something went wrong while registring user: try again later");
    }
-
+    console.log("reacged here")
   return res
    .status(201)
    .json(new ApiResponse(201, createUser, "User registerd successfully"))
@@ -217,7 +218,7 @@ const refreshAccessTooken = asyncHandler(async (req, res) => {
      
       const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
-      console.log(incomingRefreshToken, "\n IncomingAccessToken in refreshAccessTooken");
+      console.log(incomingRefreshToken,"\n incomi \n" ,req.cookies.refreshToken,"\n hii cooki \n", req.body.refreshToken,"\n hellow" ,"\n IncomingAccessToken in refreshAccessTooken");
 
       if (!incomingRefreshToken) {
        throw new ApiError(401,"Unathorized Access");
@@ -235,11 +236,12 @@ const refreshAccessTooken = asyncHandler(async (req, res) => {
          throw new ApiError(401, "Inavalid refresh token")
        }
        
+       //console.log(user.username, "username")
        if (incomingRefreshToken !== user?.refreshToken) {   // ja aa raha wo user ke pass hona bhi chahiye i.e the incomingrefreshtoken must be same as the on which user have at database
          throw new ApiError(401,"Refresh token is expired or used"); 
       }
       
-       const {accessToken, newRefreshToken} = await generateAccessAndRefreshToke
+       const {accessToken, newRefreshToken} = await generateAccessAndRefreshToken(user._id)
        const options = {
          httpOnly: true,
          secure: true,
@@ -253,7 +255,8 @@ const refreshAccessTooken = asyncHandler(async (req, res) => {
          new ApiResponse(
            200,
            {
-             refreshToken:newRefreshToken, accessToken           
+             refreshToken:newRefreshToken, accessToken  ,
+             user         
            },
          "AccessToken generated succesfully"
        ))
@@ -285,10 +288,12 @@ const forgetPassword = asyncHandler(async (req, res) => {
         if (!user) {
               throw new ApiError(404, "User not found")
         }
-        //console.log(user._id.toString(),"===", req.user._id)
+        // this two line of code can not be used here bcs user can not send token when sending forgot pass req as he his token have been expired
+        console.log(user, "user in forget password",req)
+        console.log(user._id.toString(),"===", req.user._id)
         if (user._id.toString() !== req.user._id.toString()) {
               throw new ApiError(401, "You are not authorized to perform this action")
-        }
+        } // remove this and add code to send otp on given email of username/user to verify that user is authorised
   
         user.password = confirmPassword
         await user.save({validateBeforeSave: false});
@@ -299,7 +304,7 @@ const forgetPassword = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, user.username, ": Password changed succesfully"))
         } catch (error) {
           console.log("error in forget password: ", error)
-           throw new ApiError(500, "Error while updating user password: Please try again later")
+           throw new ApiError(500, "Error while chaning forgot password of user: Please try again later")
         }
 })//DONE!
 
@@ -354,6 +359,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
        email: user.email,
        role: user.role,
        bio: user.bio,
+       avatar: user.avatar
       }
       return res
       .status(200)

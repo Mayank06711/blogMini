@@ -26,12 +26,11 @@ router.route("/register").post(
     registerUser)
 
 router.route("/login").post(loginUser)
-
+router.route("/password/f").post(forgetPassword)
 //secured routes 
 router.route("/logout").post(verifyJWT, logoutUser)
 router.route("/refresh-token").post(refreshAccessTooken) //
 router.route("/password/c").post(verifyJWT, changeCurrentPassword)
-router.route("/password/f").post(verifyJWT, forgetPassword)
 router.route("/current-user").get(verifyJWT, getCurrentUser)
 router.route("/udpade-account").patch(verifyJWT, updateUserDetails)
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar)

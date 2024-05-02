@@ -47,7 +47,7 @@ const userSchema = new Schema({
     },
     role:{
         type:String,
-        required: true,
+        required: false,
         trim: true,
         default: "user"//Defines the user's role or permissions within the blog system. For example, "user", "admin", "editor", etc.
     },

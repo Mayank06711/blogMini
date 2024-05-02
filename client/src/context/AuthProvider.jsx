@@ -4,9 +4,9 @@ import AuthContext from "./authContext";
 
 export  const AuthProvider = ({ children })=>{
     const [auth, setAuth] = useState({});
-    // const [user, setUser] = useState(null); we can pass it as auth and authprovider user, setUser
+     const [user, setUser] = useState({}); //we can pass it as auth and authprovider user, setUser
     return (
-        <AuthContext.Provider value={{auth, setAuth}}>
+        <AuthContext.Provider value={{auth, setAuth, user, setUser}}>
             {children}
         </AuthContext.Provider>
     )
