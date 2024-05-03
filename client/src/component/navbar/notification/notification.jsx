@@ -7,7 +7,7 @@ const Notification = ({ visible}) => {
             <h2 className="text-xl font-bold mb-2">Notifications</h2>
             <hr className="mb-2" />
             <p>Notification content goes here...</p>
-            <button className='absolute w-2/12 h-8 bottom-4 right-3 rounded-md text-white font-semibold bg-gray-600 hover:text-black hover:bg-gray-300'>Clear</button>
+            <button className='absolute  bottom-4 right-3 rounded-sm border border-black   py-2 px-4  font-semibold bg-gray-400 hover:bg-gray-500'>Clear</button>
 
         </div>
     );

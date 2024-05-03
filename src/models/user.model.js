@@ -45,6 +45,12 @@ const userSchema = new Schema({
         required: false,
         default:"blog writer"
     },
+    location:{
+        type: String,
+        required: false,
+        default:"India",
+        trim: true,
+    },
     role:{
         type:String,
         required: false,
