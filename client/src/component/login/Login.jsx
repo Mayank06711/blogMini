@@ -211,7 +211,7 @@ const FORGOTPASS_URL = "/user/password/f";
                 name="avatar"
                 onChange={handleFile}
                 required
-                className="block w-full rounded-md border-0 py-4 px-3 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-md sm:leading-6"
+                className="block w-full rounded-md border-0 py-4 px-3 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-500 focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-md sm:leading-6"
               />
             </div>
           </div>

@@ -9,14 +9,14 @@ function App() {
     const { auth } = useAuth();
 
     return (
-      // <Routes>
-      //   <Route path="/" element={auth.accessToken ? <Navigate to="/home" /> : <Login />} />
-      // <Route element ={<RemainLogin/>}>
-      //   <Route path="/home" element={<Home />} />
-      // </Route>
-      // <Route path="/contact" element={<Contact/>} />
-      // </Routes>
-      <Home />
+      <Routes>
+        <Route path="/" element={auth.accessToken ? <Navigate to="/home" /> : <Login />} />
+      <Route element ={<RemainLogin/>}>
+        <Route path="/home" element={<Home />} />
+      </Route>
+      <Route path="/contact" element={<Contact/>} />
+      </Routes>
+      // <Home />
     );
 }
 

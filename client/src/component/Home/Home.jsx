@@ -3,6 +3,9 @@ import { Link,useNavigate } from "react-router-dom"
 import useLogout from "../Hooks/Logout"
 import Navbar from "../navbar/Navbar"
 import ForgotPassword from "../ForgotPass/ForgotPass"
+import Missing from "../Missing/404page"
+import SettingsPage from "../Profile/setting"
+import Contact from "../Contact/contact"
 const Home =  ()=>{
     const navigate = useNavigate();
     const logout = useLogout();
@@ -30,6 +33,9 @@ const Home =  ()=>{
         <Link to = "user">
             <User />
         </Link>
+        <Missing />
+        <SettingsPage />
+        <Contact />
         <div>
             home from home
             {/* <ForgotPassword /> */}

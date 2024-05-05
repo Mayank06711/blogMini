@@ -14,7 +14,7 @@ const User = ()=>{
               <div className="ml-4 mt-36 flex flex-col" style={{ width: '150px' }}>
                 <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
                   alt="Profile" className="mt-4 mb-2 rounded-lg" style={{ width: '150px' }} />
-                <button className="border border-black  rounded-sm font-semibold bg-gray-400 text-black hover:bg-gray-500 py-2 px-4 mt-4">
+                <button className="border border-black  rounded-sm font-semibold bg-gray-400 text-black hover:bg-gray-500 py-2 px-4 mt-4 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-black">
                   Edit profile
                 </button>
               </div>
