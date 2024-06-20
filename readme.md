@@ -855,5 +855,10 @@ user information, etc.
 It is provided by the useState hook and allows components to modify the authentication data stored in 
 the context.
 
-**Thinking about UI declaratively**
+###Thinking about UI declaratively
 1>Identify your component’s different visual states. 2>Determine what triggers those state changes. 3>Represent the state in memory using useState. 4>Remove any non-essential state variables. 5>Connect the event handlers to set the state.
+
+**The frontend of this project is not complete yet**
+
+As it in under devlopment mode and as for the backend it is almost cpmpleted but these might be few upgrades for security and additional features like, authentication using google or my own previous project videoTube-with-tweet.
+ 
